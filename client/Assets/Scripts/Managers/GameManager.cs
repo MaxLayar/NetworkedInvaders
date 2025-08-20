@@ -8,7 +8,8 @@ namespace NetworkedInvaders.Manager
 {
 	public class GameManager : Singleton<GameManager>
 	{
-		public GameObject player;
+		[SerializeField] private GameObject player;
+		[SerializeField] private GameObject gameplayElements;
 		
 		[Header("Invader Settings")]
 		[SerializeField] private GameObject invaderPrefab;
@@ -28,11 +29,7 @@ namespace NetworkedInvaders.Manager
 
 		private List<Invader> invaders;
 		
-		private enum EdgeSide
-		{
-			Left,
-			Right
-		}
+		private enum EdgeSide { Left, Right }
 
 		private void Start()
 		{
@@ -41,6 +38,8 @@ namespace NetworkedInvaders.Manager
 			
 			loggedIn = false;
 			NetworkManager.Instance.Login(OnLoginSuccess);
+
+			Time.timeScale = 0f;
 		}
 
 		private void OnDestroy()
@@ -53,7 +52,9 @@ namespace NetworkedInvaders.Manager
 		{
 			loggedIn = true;
 			SpawnInvaders();
-			gameOverUI.SetActive(false);
+			gameplayElements.SetActive(true);
+			
+			Time.timeScale = 1f;
 		}
 				
 		private void EndRound()
