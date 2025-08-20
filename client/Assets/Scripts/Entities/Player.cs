@@ -4,11 +4,14 @@ namespace NetworkedInvaders.Entity
 {
     public class Player : MonoBehaviour
     {
-        public float speed = 5f;
-        public GameObject bulletPrefab;
-        public Transform bulletSpawnPoint;
-        public float bulletSpeed = 10f;
-        public float bulletCooldown = 0.5f;
+        [Header("Player Control")]
+        [SerializeField] private float speed = 5f;
+        
+        [Header("Bullet Settings")]
+        [SerializeField] private GameObject bulletPrefab;
+        [SerializeField] private Transform bulletSpawnPoint;
+        [SerializeField] private float bulletSpeed = 10f;
+        [SerializeField] private float bulletCooldown = 0.5f;
 
         private float lastBulletTime;
 

@@ -8,7 +8,7 @@ namespace NetworkedInvaders.Manager
 {
 	public class NetworkManager : Singleton<NetworkManager>
 	{
-		public string serverBaseUrl = "http://localhost:4444";
+		[SerializeField] private string serverBaseUrl = "http://localhost:4444";
 
 		internal void Login(System.Action<string> callback)
 		{
