@@ -1,21 +1,19 @@
 {
   "name": "oxalis-coding-test-server",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "app": "node index.js",
+    "dev": "nodemon server.js",
+    "app": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "http": "^0.0.1-security"
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.1",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
