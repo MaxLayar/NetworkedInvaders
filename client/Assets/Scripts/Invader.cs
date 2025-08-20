@@ -1,53 +1,58 @@
 using UnityEngine;
+using NetworkedInvaders.Manager;
 
-public class Invader : MonoBehaviour
+namespace NetworkedInvaders.Entity
 {
-    public float speed = 1f;
-    public float moveDownDistance = 1f;
-
-    private bool moveRight = true;
-    private static float lowestPosition = Mathf.Infinity;
-
-    private void Start()
+    public class Invader : MonoBehaviour
     {
-        InvokeRepeating("Move", 1f, 1f);
-    }
+        public float speed = 1f;
+        public float moveDownDistance = 1f;
 
-    private void Move()
-    {
-        Vector3 movement = moveRight ? Vector3.right : Vector3.left;
-        transform.Translate(movement * speed);
+        private bool moveRight = true;
+        private static float lowestPosition = Mathf.Infinity;
 
-        if (transform.position.y < lowestPosition)
+        private void Start()
         {
-            lowestPosition = transform.position.y;
+            InvokeRepeating("Move", 1f, 1f);
         }
 
-        CheckScreenEdgeCollision();
-    }
-
-    private void CheckScreenEdgeCollision()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, moveDownDistance, LayerMask.GetMask("Default"));
-
-        if (hit.collider != null && hit.collider.CompareTag("ScreenEdge"))
+        private void Move()
         {
-            GameController.Instance.InvaderHitEdge();
+            Vector3 movement = moveRight ? Vector3.right : Vector3.left;
+            transform.Translate(movement * speed);
+
+            if (transform.position.y < lowestPosition)
+            {
+                lowestPosition = transform.position.y;
+            }
+
+            CheckScreenEdgeCollision();
         }
-    }
 
-    public void ChangeDirection(bool newDirection)
-    {
-        moveRight = newDirection;
-        transform.Translate(Vector3.down * moveDownDistance);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Bullet"))
+        private void CheckScreenEdgeCollision()
         {
-            Destroy(gameObject);
-            Destroy(collision.gameObject);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, moveDownDistance,
+                LayerMask.GetMask("Default"));
+
+            if (hit.collider != null && hit.collider.CompareTag("ScreenEdge"))
+            {
+                GameController.Instance.InvaderHitEdge();
+            }
+        }
+
+        public void ChangeDirection(bool newDirection)
+        {
+            moveRight = newDirection;
+            transform.Translate(Vector3.down * moveDownDistance);
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Bullet"))
+            {
+                Destroy(gameObject);
+                Destroy(collision.gameObject);
+            }
         }
     }
 }
