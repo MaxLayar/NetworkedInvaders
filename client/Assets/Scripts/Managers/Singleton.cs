@@ -4,6 +4,7 @@ namespace NetworkedInvaders.Manager
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
+        // Can be overriden if some singletons doesn't need to be scene persistant.
         public virtual bool isDontDestroyOnLoad => true;
 
         protected static T instance;
@@ -12,25 +13,26 @@ namespace NetworkedInvaders.Manager
             get
             {
 #if UNITY_EDITOR
-                if (!Application.isPlaying && instance == null)
-                    instance = FindFirstObjectByType<T>();
+                if (!Application.isPlaying && !instance)
+                    instance = FindInstance();
 #endif
+                
+                return instance ??= FindInstance();
 
-                if (instance == null)
+                static T FindInstance()
                 {
-                    instance = FindFirstObjectByType<T>();
+                    T found = FindFirstObjectByType<T>();
 
-                    if (instance == null)
+                    if (!found)
                         Debug.LogError($"Your singleton '{typeof(T).Name}' doesn't exist.");
+                    return found;
                 }
-
-                return instance;
             }
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
-            if (instance != null && instance != this)
+            if (instance && instance != this)
             {
                 Destroy(gameObject);
                 return;
@@ -39,7 +41,7 @@ namespace NetworkedInvaders.Manager
             instance = this as T;
 
             if (isDontDestroyOnLoad)
-                DontDestroyOnLoad(instance);
+                DontDestroyOnLoad(gameObject);
 
             OnAwake();
         }
