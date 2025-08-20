@@ -375,7 +375,6 @@ MonoBehaviour:
   invadersColumns: 10
   spacingX: 1.5
   spacingY: 1.5
-  gameOverUI: {fileID: 797358150}
 --- !u!114 &256824700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -785,7 +784,7 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "Sp\u0360\u034F\u0362e\u0334\u0358a\u035E\u031Bk\u0338\u035D \u0358\u035Cy\u0321\u034F\u0361\u035D0\u0334ur\u0361\u0358
-    \u0144\u0335\u0360a\u0338\u0360\u034Fm\u035D\xEB\u0337, \xE7\u0336\u03604\u0315\u0360rb0n-l\u034F\xEF\u0192\xEA\u01920r\u0338m\u0334::"
+    \u0144\u0335\u0360a\u0338\u0360\u034Fm\u035D\xEB\u0337, \xE7\u0336\u0360A\u0315\u0360rb0n-l\u034F\xEF\u0192\xEA\u01920r\u0338m\u0334::"
 --- !u!222 &779994605
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1055,7 +1054,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1081741138}
   - component: {fileID: 1081741141}
-  - component: {fileID: 1081741140}
   - component: {fileID: 1081741139}
   m_Layer: 5
   m_Name: InputField
@@ -1126,7 +1124,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1081741140}
+  m_TargetGraphic: {fileID: 0}
   m_TextComponent: {fileID: 580497458}
   m_Placeholder: {fileID: 1571198578}
   m_ContentType: 0
@@ -1139,7 +1137,19 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnSubmit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1294819302}
+        m_TargetAssemblyTypeName: NetworkedInvaders.Manager.UIManager, Assembly-CSharp
+        m_MethodName: OnSubmitPlayerName
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDidEndEdit:
     m_PersistentCalls:
       m_Calls: []
@@ -1154,36 +1164,6 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 0
   m_ShouldActivateOnSelect: 1
---- !u!114 &1081741140
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1081741137}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1081741141
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1243,6 +1223,7 @@ GameObject:
   - component: {fileID: 1294819300}
   - component: {fileID: 1294819299}
   - component: {fileID: 1294819298}
+  - component: {fileID: 1294819302}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -1338,6 +1319,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1294819302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1294819297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38cb811c76a964a448dd8b116466f286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score: {fileID: 1984502043}
+  lives: {fileID: 188796889}
+  playerNameInput: {fileID: 1081741139}
+  playerInputResponseText: {fileID: 345915508}
+  gameOverPanel: {fileID: 797358150}
 --- !u!1 &1299671291
 GameObject:
   m_ObjectHideFlags: 0

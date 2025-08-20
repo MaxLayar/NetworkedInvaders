@@ -21,8 +21,7 @@ namespace NetworkedInvaders.Manager
 		[SerializeField] private float spacingX = 1.5f;
 		[SerializeField] private float spacingY = 1.5f;
 		
-		[Header("Game Screens")]
-		[SerializeField] private GameObject gameOverUI;
+		public static event Action OnGameOver;
 
 		private bool moveRight = true;
 		private bool loggedIn = false;
@@ -37,9 +36,16 @@ namespace NetworkedInvaders.Manager
 			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
 			
 			loggedIn = false;
-			NetworkManager.Instance.Login(OnLoginSuccess);
-
 			Time.timeScale = 0f;
+			
+			NetworkManager.Instance.Login(response =>
+			{
+				loggedIn = true;
+				SpawnInvaders();
+				gameplayElements.SetActive(true);
+			
+				Time.timeScale = 1f;
+			});
 		}
 
 		private void OnDestroy()
@@ -48,23 +54,14 @@ namespace NetworkedInvaders.Manager
 		}
 
 		#region GameState
-		private void OnLoginSuccess(string loginResponse)
-		{
-			loggedIn = true;
-			SpawnInvaders();
-			gameplayElements.SetActive(true);
-			
-			Time.timeScale = 1f;
-		}
-				
 		private void EndRound()
 		{
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 		
-		private void GameOver()
+		private static void GameOver()
 		{
-			gameOverUI.SetActive(true);
+			OnGameOver?.Invoke();
 		}
 		#endregion GameState
 
@@ -82,9 +79,9 @@ namespace NetworkedInvaders.Manager
 			}
 		}
 		
-		private void HandleInvaderCollision(Invader invader, Collider2D collider)
+		private void HandleInvaderCollision(Invader invader, Collider2D col)
 		{
-			switch (collider.tag)
+			switch (col.tag)
 			{
 				case "ScreenEdgeLeft":
 					InvaderHitEdge(EdgeSide.Left);
@@ -96,7 +93,7 @@ namespace NetworkedInvaders.Manager
 					GameOver();
 					break;
 				case "Bullet":
-					Destroy(collider.gameObject);
+					Destroy(col.gameObject);
 					Destroy(invader?.gameObject);
 					break;
 			}

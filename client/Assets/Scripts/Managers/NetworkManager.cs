@@ -4,12 +4,20 @@ using System.Text;
 using UnityEngine.Networking;
 using System.Net.Http;
 
+
 namespace NetworkedInvaders.Manager
 {
 	public class NetworkManager : Singleton<NetworkManager>
 	{
 		[SerializeField] private string serverBaseUrl = "http://localhost:4444";
 
+		
+		[System.Serializable]
+		public class PlayerData
+		{
+			public string username;
+		}
+		
 		internal void Login(System.Action<string> callback)
 		{
 			Request("POST","/join", "{\"username\":\"Player\"}", callback);
@@ -19,7 +27,13 @@ namespace NetworkedInvaders.Manager
 		{
 			Request("GET","/timeleft", string.Empty, callback);
 		}
-
+		
+		public void SubmitPlayerName(string playerName, Action<string> callback)
+		{
+			string content = JsonUtility.ToJson(new PlayerData { username = playerName});
+			Request("POST", "/submit", content, callback);
+		}
+		
 		private async void Request(string method, string endpoint, string content, System.Action<string> callback)
 		{
 			try
