@@ -1,10 +1,8 @@
 using System;
 using UnityEngine;
 using System.Text;
-using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using System.Net.Http;
-using NetworkedInvaders.Entity;
 
 namespace NetworkedInvaders.Manager
 {

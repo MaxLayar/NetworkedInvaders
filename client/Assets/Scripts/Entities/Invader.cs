@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using NetworkedInvaders.Manager;
 
@@ -36,7 +37,7 @@ namespace NetworkedInvaders.Entity
 
             if (hit.collider != null && hit.collider.CompareTag("ScreenEdge"))
             {
-                GameController.Instance.InvaderHitEdge();
+                GameManager.Instance.InvaderHitEdge();
             }
         }
 
@@ -53,6 +54,11 @@ namespace NetworkedInvaders.Entity
                 Destroy(gameObject);
                 Destroy(collision.gameObject);
             }
+        }
+
+        private void OnDestroy()
+        {
+            GameManager.Instance.RemoveInvader(this);
         }
     }
 }
