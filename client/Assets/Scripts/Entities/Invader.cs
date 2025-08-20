@@ -6,15 +6,24 @@ namespace NetworkedInvaders.Entity
 {
     public class Invader : MonoBehaviour
     {
-        public float speed = 1f;
-        public float moveDownDistance = 1f;
+        [SerializeField] private float speed = 1f;
+        [SerializeField] private float moveDownDistance = 1f;
+        [SerializeField] private float moveInterval = 1f;
 
+        private float moveTimer = 0f;
         private bool moveRight = true;
         private static float lowestPosition = Mathf.Infinity;
 
-        private void Start()
+        public static event Action<Invader, Collider2D> OnTriggerEnter2DEvent;
+
+        private void Update()
         {
-            InvokeRepeating("Move", 1f, 1f);
+            moveTimer += Time.deltaTime;
+            if (moveTimer >= moveInterval)
+            {
+                Move();
+                moveTimer = 0f;
+            }
         }
 
         private void Move()
@@ -26,34 +35,17 @@ namespace NetworkedInvaders.Entity
             {
                 lowestPosition = transform.position.y;
             }
-
-            CheckScreenEdgeCollision();
         }
 
-        private void CheckScreenEdgeCollision()
-        {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, moveDownDistance,
-                LayerMask.GetMask("Default"));
-
-            if (hit.collider != null && hit.collider.CompareTag("ScreenEdge"))
-            {
-                GameManager.Instance.InvaderHitEdge();
-            }
-        }
-
-        public void ChangeDirection(bool newDirection)
+        internal void ChangeDirection(bool newDirection)
         {
             moveRight = newDirection;
             transform.Translate(Vector3.down * moveDownDistance);
         }
 
-        private void OnTriggerEnter2D(Collider2D collision)
+        private void OnTriggerEnter2D(Collider2D col)
         {
-            if (collision.CompareTag("Bullet"))
-            {
-                Destroy(gameObject);
-                Destroy(collision.gameObject);
-            }
+            OnTriggerEnter2DEvent?.Invoke(this, col);
         }
 
         private void OnDestroy()

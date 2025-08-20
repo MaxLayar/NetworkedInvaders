@@ -147,4 +147,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  deathEffect: {fileID: 0}
+  moveDownDistance: 1
+  moveInterval: 1

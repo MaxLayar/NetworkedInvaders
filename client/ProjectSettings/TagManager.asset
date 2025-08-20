@@ -6,7 +6,9 @@ TagManager:
   tags:
   - Bullet
   - Invader
-  - ScreenEdge
+  - ScreenEdgeRight
+  - ScreenEdgeLeft
+  - ScreenBottom
   layers:
   - Default
   - TransparentFX
