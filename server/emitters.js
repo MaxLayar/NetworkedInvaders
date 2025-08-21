@@ -9,11 +9,15 @@ export function sendWelcome(ws) {
     });
 }
 
-export function sendPlayerCreated(ws, requestId, success, message) {
-    send(ws, "client:login", requestId, {
+export function sendSimpleMessage(ws, eventName, requestId, success, message) {
+    send(ws, eventName, requestId, {
         success: success,
-        message: message //player.username or error message
+        message: message // can be player.username or error message
     });
+}
+
+export function sendJsonObject(ws, eventName, requestId, data = {}) {
+    send(ws, eventName, requestId, data);
 }
 
 export function broadcast(wss, eventName, data = {}) {
