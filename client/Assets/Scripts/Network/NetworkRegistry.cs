@@ -9,6 +9,7 @@ namespace NetworkedInvaders.Network
     {
         public static event Action<string, string> OnServerConnected;
         public static event Action<bool, string> OnLoginResult;
+        public static event Action<string, int, int> OnScoresReceived;
 
         public static void InitHandlers()
         {
@@ -38,6 +39,24 @@ namespace NetworkedInvaders.Network
                 }
                 
                 OnLoginResult?.Invoke(success, message);
+            });
+            
+            NetworkEvents.RegisterHandler("client:scoreUpdate", msg =>
+            {
+                if (msg.data is JObject obj)
+                {
+                    if (!obj["success"]?.ToObject<bool>() ?? false)
+                    {
+                        Debug.LogError("Score submission failed");
+                        return;
+                    }
+
+                    string username = obj["username"]?.ToString();
+                    int score = obj["score"]?.ToObject<int>() ?? 0;
+                    int highscore = obj["highscore"]?.ToObject<int>() ?? 0;
+
+                    OnScoresReceived?.Invoke(username, score, highscore);
+                }
             });
         }
         

@@ -1,13 +1,15 @@
 using System;
 using NetworkedInvaders.Network;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace NetworkedInvaders.Manager
 {
 	public class UIManager : Singleton<UIManager>
 	{
-		[SerializeField] private Text score;
+		[SerializeField] private Text scoreText;
+		[SerializeField] private Text highscoreText;
 		[SerializeField] private Text lives;
 		[SerializeField] private InputField playerNameInput;
 		[SerializeField] private Text playerInputResponseText;
@@ -23,6 +25,7 @@ namespace NetworkedInvaders.Manager
 			GameManager.OnActivateScoring += OnActivateScoring;
 			GameManager.OnGameOver += OnGameOver;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
+			NetworkRegistry.OnScoresReceived += OnScoresReceived;
 		}
 
 		private void OnDestroy()
@@ -30,6 +33,14 @@ namespace NetworkedInvaders.Manager
 			GameManager.OnActivateScoring -= OnActivateScoring;
 			GameManager.OnGameOver -= OnGameOver;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
+			NetworkRegistry.OnScoresReceived -= OnScoresReceived;
+		}
+
+		private void OnScoresReceived(string playerName, int currentScore, int highscore)
+		{
+			if (!highscoreText.isActiveAndEnabled)
+				highscoreText.gameObject.SetActive(true);
+			highscoreText.text = "Highscore: " + highscore;
 		}
 
 		private void OnActivateScoring()
@@ -40,7 +51,7 @@ namespace NetworkedInvaders.Manager
 
 		private void OnScoreChanged(int newScore)
 		{
-			score.text = newScore.ToString();
+			scoreText.text = newScore.ToString();
 		}
 
 		public void OnSubmitPlayerName(string playerName)
@@ -59,7 +70,7 @@ namespace NetworkedInvaders.Manager
 			{
 				playerNameInput.transform.parent.gameObject.SetActive(false);
 				if (isScoreActive)
-					score.gameObject.SetActive(true);
+					scoreText.gameObject.SetActive(true);
 			}
 			else
 			{
