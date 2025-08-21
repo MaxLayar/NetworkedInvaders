@@ -11,11 +11,6 @@ namespace NetworkedInvaders.Network
 
         public static void InitHandlers()
         {
-            NetworkEvents.RegisterHandler("error", msg =>
-            {
-                
-            });
-            
             NetworkEvents.RegisterHandler("server:connection", msg =>
             {
                 if (msg.data is JObject obj)
@@ -35,10 +30,10 @@ namespace NetworkedInvaders.Network
                 string message = "";
                 if (msg.data is JObject obj)
                 {
-                    message = obj["username"]?.ToString();
-                    success = msg.IsSuccess;
+                    success = obj["success"]?.ToObject<bool>() ?? false;
+                    message = obj["message"]?.ToString();
 
-                    Debug.Log($"Login response success = {success}: {message}");
+                    Debug.Log($"Login response { (success?"success":"failure")}: {message}");
                 }
                 
                 OnLoginResult?.Invoke(success, message);

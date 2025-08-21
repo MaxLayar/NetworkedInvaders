@@ -17,8 +17,5 @@ namespace NetworkedInvaders.Network
         public string eventName;
         public string requestId;
         public object data;
-
-        [JsonIgnore]
-        public bool IsSuccess => eventName != "error";
     }
 }
