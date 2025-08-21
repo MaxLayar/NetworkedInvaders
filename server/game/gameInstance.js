@@ -127,3 +127,9 @@ export function scoreUpdate(ws, eventName, requestId, data) {
         highscore: player.highscore
     });
 }
+
+export function startGameplay(ws, eventName, requestId, data)
+{
+    if (connectedPlayers.size < 2 || countdown === null || remainingTime <= 0)
+        startCountdown();
+}

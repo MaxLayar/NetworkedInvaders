@@ -83,6 +83,7 @@ namespace NetworkedInvaders.Network
         {
             UIManager.OnLoginSubmission += Login;
             GameManager.OnScoreChanged += OnScoreChanged;
+            GameManager.OnStartGameplay += OnStartGameplay;
         }
         
         private static void Login(string username)
@@ -96,7 +97,11 @@ namespace NetworkedInvaders.Network
             var data = new { score = newScore };
             NetworkEvents.Send("client:scoreUpdate", data);
         }
-        
+
+        private static void OnStartGameplay()
+        {
+            NetworkEvents.Send("client:startGameplay", new { });
+        }
         #endregion Emitters
     }
 }

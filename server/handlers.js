@@ -1,8 +1,9 @@
-import { createPlayer, scoreUpdate } from './game/gameInstance.js';
+import { createPlayer, scoreUpdate, startGameplay } from './game/gameInstance.js';
 
 export const handlers = {
     'client:login': createPlayer,
     'client:scoreUpdate': scoreUpdate,
+    'client:startGameplay': startGameplay,
     //Other handlers
 };
 
