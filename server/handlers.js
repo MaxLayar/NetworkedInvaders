@@ -1,19 +1,19 @@
 import { createPlayer } from './game/gameInstance.js';
 
 export const handlers = {
-    'createPlayer': createPlayer,
+    'client:login': createPlayer,
     //Other handlers
 };
 
 export function handleMessage(ws, message) {
     try {
-        const { event, data } = JSON.parse(message);
-
-        if (handlers[event]) {
-            handlers[event](ws, data);
+        const { eventName, requestId, data } = JSON.parse(message);
+        
+        if (handlers[eventName]) {
+            handlers[eventName](ws, requestId, data);
         } else {
-            console.warn(`No handler found for event: ${event}`);
-            ws.send(JSON.stringify({ error: `Unknown event: ${event}` }));
+            console.warn(`No handler found for event: ${eventName}`);
+            ws.send(JSON.stringify({ error: `Unknown event: ${eventName}` }));
         }
     } catch (error) {
         console.error('Failed to parse message or handle event:', error);

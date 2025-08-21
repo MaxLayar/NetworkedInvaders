@@ -4,7 +4,6 @@ import { handleMessage } from './handlers.js';
 import { playerConnection, playerDisconnection } from './game/gameInstance.js';
 
 export function startWebSocketServer() {
-    console.log(config.server);
     const wss = new WebSocketServer({
         port: config.server.port
     });

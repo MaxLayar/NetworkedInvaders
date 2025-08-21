@@ -1,44 +1,44 @@
 import { randomUUID } from 'crypto';
 import Player from './player.js';
-import { sendWelcome, sendError, sendPlayerCreated } from '../emitters.js';
+import { sendWelcome, sendPlayerCreated } from '../emitters.js';
 
 const connectedPlayers = new Map();
 
 export function playerConnection(ws) {
-    console.log('A new client has connected.');
-    ws.clientID = randomUUID();
+    ws.clientId = randomUUID();
+    console.log(`A new client has connected ${ws.clientId}!`);
     sendWelcome(ws);
 }
 
-export function playerDisconnection(ws) {
-    if (connectedPlayers.has(ws.clientId)) {
-        const player = connectedPlayers.get(ws.clientId);
-        connectedPlayers.delete(ws.clientId);
-        console.log(`Player ${player.name} (${ws.clientId}) disconnected.`);
+export function playerDisconnection(ws, clientId) {
+    if (connectedPlayers.has(clientId)) {
+        const player = connectedPlayers.get(clientId);
+        connectedPlayers.delete(clientId);
+        console.log(`Player ${player.username} (${clientId}) disconnected.`);
     } else {
-        console.warn(`Disconnection: clientId ${ws.clientId} not found in connectedPlayers.`);
+        console.warn(`Disconnection: clientId ${clientId} not found in connectedPlayers.`);
     }
 }
 
-export function createPlayer(ws, name) {
+export function createPlayer(ws, requestId, data) {
     // Check if this ws already created a player
     if (connectedPlayers.has(ws.clientId)) {
-        sendError(ws, "You already have a player created.");
+        sendPlayerCreated(ws, requestId, false, "You already have a player created.");
         return;
     }
 
-    // Check if there's no player with the same nickname
+    // Check if there's no player with the same username
     for (let player of connectedPlayers.values()) {
-        if (player.name === name) {
-            sendError(ws, `A player with the name "${name}" already exists.`);
+        if (player.name === data.username) {
+            sendPlayerCreated(ws, requestId, false, `A player with the name "${name}" already exists.`);
             return;
         }
     }
 
     // Finally, create and add the freshly made player to the list
-    const newPlayer = new Player(ws.clientId, name);
+    const newPlayer = new Player(data.username);
     connectedPlayers.set(ws.clientId, newPlayer);
 
-    console.log(`Player created: ${name} (${ws.clientId})`);
-    sendPlayerCreated(ws, newPlayer);
+    console.log(`Player created for client ${ws.clientId} with username: ${data.username}`);
+    sendPlayerCreated(ws, requestId, true, newPlayer.username);
 }

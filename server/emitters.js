@@ -1,37 +1,33 @@
-function send(ws, event, data = {}) {
-    ws.send(JSON.stringify({ event, data }));
+function send(ws, eventName, requestId, data = {}) {
+    ws.send(JSON.stringify({ eventName, requestId, data }));
 }
 
 export function sendWelcome(ws) {
-    send(ws, "server:connection", {
+    send(ws, "server:connection", "0", {
         clientID: ws.clientId,
         message: "Welcome to the game!"
     });
 }
 
-export function sendError(ws, message) {
-    send(ws, "server:error", { message });
-}
-
-export function sendPlayerCreated(ws, player) {
-    send(ws, "server:playerCreated", {
-        clientID: player.id,
-        name: player.name
+export function sendPlayerCreated(ws, requestId, success, message) {
+    send(ws, "client:login", requestId, {
+        success: success,
+        message: message //player.username or error message
     });
 }
 
-export function broadcast(wss, event, data = {}) {
+export function broadcast(wss, eventName, data = {}) {
     wss.clients.forEach(client => {
         if (client.readyState === client.OPEN) {
-            send(client, event, data);
+            send(client, eventName, "0", data);
         }
     });
 }
 
-export function sendToPlayer(wss, clientId, event, data) {
+export function sendToPlayer(wss, clientId, eventName, data) {
     for (const client of wss.clients) {
         if (client.readyState === client.OPEN && client.clientId === clientId) {
-            send(client, event, data);
+            send(client, eventName, "0", data);
         }
     }
 }
