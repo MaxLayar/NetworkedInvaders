@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using NetworkedInvaders.Entity;
+using NetworkedInvaders.Network;
 
 namespace NetworkedInvaders.Manager
 {
@@ -38,20 +39,22 @@ namespace NetworkedInvaders.Manager
 			Time.timeScale = 0f;
 
 			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
-			NetworkManager.OnLoggedIn += OnLoggedIn;
+			NetworkRegistry.OnLoginResult += OnLoginResult;
 		}
 
 		private void OnDestroy()
 		{
 			Invader.OnTriggerEnter2DEvent -= HandleInvaderCollision;
-			NetworkManager.OnLoggedIn -= OnLoggedIn;
+			NetworkRegistry.OnLoginResult -= OnLoginResult;
 		}
 
 		#region GameState
 
-		private void OnLoggedIn(NetworkManager.ServerMessage response)
+		private void OnLoginResult(bool success, string message)
 		{
-			Debug.Log("Player logged");
+			if (!success) return;
+			
+			Debug.Log($"Player logged in: {message}");
 			loggedIn = true;
 			StartGameplay();
 		}

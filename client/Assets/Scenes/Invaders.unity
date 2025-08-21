@@ -387,7 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d217f5eb1f97e847918115ab358ee57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverBaseUrl: http://localhost:4444
+  serverUrl: ws://localhost:4444
 --- !u!1 &345915506
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,7 +459,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'ERROR:'
+  m_Text: 
 --- !u!222 &345915509
 CanvasRenderer:
   m_ObjectHideFlags: 0

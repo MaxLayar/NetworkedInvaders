@@ -1,4 +1,5 @@
 using System;
+using NetworkedInvaders.Network;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,13 +18,13 @@ namespace NetworkedInvaders.Manager
 		private void Start()
 		{
 			GameManager.OnGameOver += OnGameOver;
-			NetworkManager.OnLoggedIn += OnLoggedIn;
+			NetworkRegistry.OnLoginResult += OnLoginResult;
 		}
 
 		private void OnDestroy()
 		{
 			GameManager.OnGameOver -= OnGameOver;
-			NetworkManager.OnLoggedIn -= OnLoggedIn;
+			NetworkRegistry.OnLoginResult -= OnLoginResult;
 		}
 
 		public void OnSubmitPlayerName(string playerName)
@@ -32,16 +33,16 @@ namespace NetworkedInvaders.Manager
 			
 			isSubmitting = true;
 
-			NetworkManager.Instance.Login(playerName);
+			NetworkRegistry.Login(playerName);
 		}
 
-		private void OnLoggedIn(NetworkManager.ServerMessage response)
+		private void OnLoginResult(bool success, string message)
 		{
 			isSubmitting = false;
-			if (response.IsSuccess())
+			if (success)
 				playerNameInput.transform.parent.gameObject.SetActive(false);
 			else
-				playerInputResponseText.text = response.data.ToString();
+				playerInputResponseText.text = message;
 		}
 
 		private void OnGameOver()
