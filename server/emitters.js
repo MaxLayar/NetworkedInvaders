@@ -3,7 +3,7 @@ function send(ws, eventName, requestId, data = {}) {
 }
 
 export function sendWelcome(ws) {
-    send(ws, "server:connection", "0", {
+    send(ws, "ws:open", "0", {
         clientID: ws.clientId,
         message: "Welcome to the game!"
     });

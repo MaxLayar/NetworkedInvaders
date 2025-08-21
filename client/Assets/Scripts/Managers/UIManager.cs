@@ -12,19 +12,35 @@ namespace NetworkedInvaders.Manager
 		[SerializeField] private InputField playerNameInput;
 		[SerializeField] private Text playerInputResponseText;
 		[SerializeField] private GameObject gameOverPanel;
+
+		public static event Action<string> OnLoginSubmission;
 		
 		private bool isSubmitting;
+		private bool isScoreActive;
 
-		private void Start()
+		protected override void OnAwake()
 		{
+			GameManager.OnActivateScoring += OnActivateScoring;
 			GameManager.OnGameOver += OnGameOver;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
 		}
 
 		private void OnDestroy()
 		{
+			GameManager.OnActivateScoring -= OnActivateScoring;
 			GameManager.OnGameOver -= OnGameOver;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
+		}
+
+		private void OnActivateScoring()
+		{
+			isScoreActive = true;
+			GameManager.OnScoreChanged += OnScoreChanged;
+		}
+
+		private void OnScoreChanged(int newScore)
+		{
+			score.text = newScore.ToString();
 		}
 
 		public void OnSubmitPlayerName(string playerName)
@@ -33,16 +49,22 @@ namespace NetworkedInvaders.Manager
 			
 			isSubmitting = true;
 
-			NetworkRegistry.Login(playerName);
+			OnLoginSubmission?.Invoke(playerName);
 		}
 
 		private void OnLoginResult(bool success, string message)
 		{
 			isSubmitting = false;
 			if (success)
+			{
 				playerNameInput.transform.parent.gameObject.SetActive(false);
+				if (isScoreActive)
+					score.gameObject.SetActive(true);
+			}
 			else
+			{
 				playerInputResponseText.text = message;
+			}
 		}
 
 		private void OnGameOver()

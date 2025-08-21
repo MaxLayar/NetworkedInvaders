@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace NetworkedInvaders.Network
 {
@@ -21,6 +20,7 @@ namespace NetworkedInvaders.Network
             WebsocketHandler.OnRawMessage += HandleServerMessage;
 
             NetworkRegistry.InitHandlers();
+            NetworkRegistry.InitEmitters();
         }
 
         public static void Send<T>(string eventName, T data, Action<ServerMessage> callback = null)

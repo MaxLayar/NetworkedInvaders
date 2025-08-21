@@ -11,6 +11,7 @@ namespace NetworkedInvaders.Manager
 	{
 		[SerializeField] private GameObject player;
 		[SerializeField] private GameObject gameplayElements;
+		[SerializeField] private bool isScoreActive = false;
 		
 		[Header("Invader Settings")]
 		[SerializeField] private GameObject invaderPrefab;
@@ -23,23 +24,41 @@ namespace NetworkedInvaders.Manager
 		[SerializeField] private float spacingY = 1.5f;
 		
 		public static event Action OnGameOver;
+		public static event Action OnActivateScoring;
+		public static event Action<int> OnScoreChanged;
+		
+		private int score = 0;
+		private int Score
+		{
+			get => score;
+			set
+			{
+				if (score == value) return;
+				score = value;
+				OnScoreChanged?.Invoke(score);
+			}
+		}
 
-		private bool moveRight = true;
-		private bool loggedIn = false;
+		private bool isMoveRight = true;
+		private bool isLoggedIn = false;
 
 		private List<Invader> invaders;
 		
 		private enum EdgeSide { Left, Right }
 
+
 		private void Start()
 		{
 			invaders = new List<Invader>();
 			
-			loggedIn = false;
+			isLoggedIn = false;
 			Time.timeScale = 0f;
 
 			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
+
+			if (isScoreActive)
+				OnActivateScoring?.Invoke();
 		}
 
 		private void OnDestroy()
@@ -55,7 +74,7 @@ namespace NetworkedInvaders.Manager
 			if (!success) return;
 			
 			Debug.Log($"Player logged in: {message}");
-			loggedIn = true;
+			isLoggedIn = true;
 			StartGameplay();
 		}
 
@@ -105,23 +124,31 @@ namespace NetworkedInvaders.Manager
 					GameOver();
 					break;
 				case "Bullet":
+					KillInvader(invader);
 					Destroy(col.gameObject);
-					Destroy(invader?.gameObject);
 					break;
 			}
 		}
-		
+
+		private void KillInvader(Invader invader)
+		{
+			if (isScoreActive)
+				Score += invader?.level ?? 0;
+			
+			Destroy(invader?.gameObject);
+		}
+
 		private void InvaderHitEdge(EdgeSide side)
 		{
 			// Right = 1, Left = -1
-			int dirSign = moveRight ? 1 : -1;
+			int dirSign = isMoveRight ? 1 : -1;
 			int sideSign = side == EdgeSide.Right ? 1 : -1;
 
 			// Only change direction if invaders trigger the side they're moving toward.
 			if (dirSign != sideSign) return;
 			
-			moveRight = !moveRight;
-			invaders.ForEach(invader => invader?.ChangeDirection(moveRight));
+			isMoveRight = !isMoveRight;
+			invaders.ForEach(invader => invader?.ChangeDirection(isMoveRight));
 		}
 
 		internal void RemoveInvader(Invader invader)

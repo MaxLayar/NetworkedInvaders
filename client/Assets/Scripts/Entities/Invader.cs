@@ -12,7 +12,7 @@ namespace NetworkedInvaders.Entity
 
         private float moveTimer = 0f;
         private bool moveRight = true;
-        private static float lowestPosition = Mathf.Infinity;
+        internal int level = 1;
 
         public static event Action<Invader, Collider2D> OnTriggerEnter2DEvent;
 
@@ -30,11 +30,6 @@ namespace NetworkedInvaders.Entity
         {
             Vector3 movement = moveRight ? Vector3.right : Vector3.left;
             transform.Translate(movement * speed);
-
-            if (transform.position.y < lowestPosition)
-            {
-                lowestPosition = transform.position.y;
-            }
         }
 
         internal void ChangeDirection(bool newDirection)
