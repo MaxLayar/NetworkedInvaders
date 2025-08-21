@@ -23,6 +23,7 @@ namespace NetworkedInvaders.Manager
 		[SerializeField] private float spacingX = 1.5f;
 		[SerializeField] private float spacingY = 1.5f;
 		
+		public static event Action OnStartGameplay;
 		public static event Action OnGameOver;
 		public static event Action OnActivateScoring;
 		public static event Action<int> OnScoreChanged;
@@ -39,32 +40,38 @@ namespace NetworkedInvaders.Manager
 			}
 		}
 
-		private bool isMoveRight = true;
-		private bool isLoggedIn = false;
-
-		private List<Invader> invaders;
+		private static bool isLoggedIn;
+		private static string clientId;
 		
+		private bool isMoveRight = true;
+		private List<Invader> invaders;
 		private enum EdgeSide { Left, Right }
 
 
 		private void Start()
 		{
 			invaders = new List<Invader>();
-			
-			isLoggedIn = false;
 			Time.timeScale = 0f;
 
 			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
+			NetworkRegistry.OnServerConnected += OnServerConnected;
+			UIManager.OnGameOverSkip += EndRound;
 
 			if (isScoreActive)
 				OnActivateScoring?.Invoke();
+
+			// Player's already connected/logged, skip "enter your name" step
+			if (isLoggedIn && !string.IsNullOrEmpty(clientId))
+				StartGameplay();
 		}
 
 		private void OnDestroy()
 		{
 			Invader.OnTriggerEnter2DEvent -= HandleInvaderCollision;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
+			NetworkRegistry.OnServerConnected -= OnServerConnected;
+			UIManager.OnGameOverSkip -= EndRound;
 		}
 
 		#region GameState
@@ -78,11 +85,24 @@ namespace NetworkedInvaders.Manager
 			StartGameplay();
 		}
 
+		private void OnServerConnected(string id, string welcomeMessage)
+		{
+			if (string.IsNullOrEmpty(clientId))
+			{
+				clientId = id;
+			}
+			else
+			{
+				Debug.LogWarning($"You seem to be already connected: {clientId}");
+			}
+		}
+
 		private void StartGameplay()
 		{
 			Time.timeScale = 1f;
 			gameplayElements.SetActive(true);
 			SpawnInvaders();
+			OnStartGameplay?.Invoke();
 		}
 		
 		private void EndRound()

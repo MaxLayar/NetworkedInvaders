@@ -16,14 +16,17 @@ namespace NetworkedInvaders.Manager
 		[SerializeField] private GameObject gameOverPanel;
 
 		public static event Action<string> OnLoginSubmission;
+		public static event Action OnGameOverSkip;
 		
 		private bool isSubmitting;
 		private bool isScoreActive;
+		private bool isGameOver;
 
 		protected override void OnAwake()
 		{
 			GameManager.OnActivateScoring += OnActivateScoring;
 			GameManager.OnGameOver += OnGameOver;
+			GameManager.OnStartGameplay += OnStartGameplay;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
 			NetworkRegistry.OnScoresReceived += OnScoresReceived;
 		}
@@ -32,6 +35,7 @@ namespace NetworkedInvaders.Manager
 		{
 			GameManager.OnActivateScoring -= OnActivateScoring;
 			GameManager.OnGameOver -= OnGameOver;
+			GameManager.OnStartGameplay -= OnStartGameplay;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
 			NetworkRegistry.OnScoresReceived -= OnScoresReceived;
 			
@@ -68,22 +72,31 @@ namespace NetworkedInvaders.Manager
 		private void OnLoginResult(bool success, string message)
 		{
 			isSubmitting = false;
-			if (success)
-			{
-				playerNameInput.transform.parent.gameObject.SetActive(false);
-				if (isScoreActive)
-					scoreText.gameObject.SetActive(true);
-			}
-			else
-			{
+			if (!success)
 				playerInputResponseText.text = message;
-			}
+		}
+
+		private void OnStartGameplay()
+		{
+			playerNameInput.transform.parent.gameObject.SetActive(false);
+			if (isScoreActive)
+				scoreText.gameObject.SetActive(true);
 		}
 
 		private void OnGameOver()
 		{
 			Time.timeScale = 0f;
 			gameOverPanel.SetActive(true);
+			isGameOver = true;
+		}
+
+		public void OnSubmit()
+		{
+			if (isGameOver)
+			{
+				OnGameOverSkip?.Invoke();
+				isGameOver = false;
+			}
 		}
 	}
 }
