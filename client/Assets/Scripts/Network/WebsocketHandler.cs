@@ -17,6 +17,8 @@ namespace NetworkedInvaders.Network
 
         async void Start()
         {
+            DontDestroyOnLoad(gameObject);
+            
             NetworkEvents.Init();
             
             websocket = new WebSocket(serverUrl);

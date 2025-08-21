@@ -30,7 +30,10 @@ namespace NetworkedInvaders.Manager
         protected virtual void Awake()
         {
             if (instance && instance != this)
-                Destroy(instance.gameObject);
+            {
+                Destroy(gameObject);
+                return;
+            }
 
             instance = this as T;
 
