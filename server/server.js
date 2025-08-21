@@ -1,4 +1,4 @@
 import { startWebSocketServer } from './websocket.js';
 
 console.log('Starting WebSocket server...');
-startWebSocketServer();
+export const wss = startWebSocketServer();

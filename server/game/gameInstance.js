@@ -1,8 +1,58 @@
 import { randomUUID } from 'crypto';
 import Player from './player.js';
-import {sendWelcome, sendSimpleMessage, sendJsonObject} from '../emitters.js';
+import { config } from '../config.js';
+import { wss } from '../server.js';
+import { 
+    sendWelcome,
+    sendSimpleMessage,
+    sendJsonObject,
+    broadcast
+} from '../emitters.js';
+
+
 
 const connectedPlayers = new Map();
+let countdown = null;
+let remainingTime = config.game.defaultRoundTime;
+
+function startCountdown() {
+    if (countdown) {
+        clearInterval(countdown);
+    }
+    console.log('Start countdown...');
+    remainingTime = config.game.defaultRoundTime;
+
+    countdown = setInterval(() => {
+        remainingTime--;
+
+        broadcast(
+            wss,
+            "server:countdown",
+            { remainingTime }
+        );
+        console.log(`Remaining time...${remainingTime}`);
+
+        if (remainingTime <= 0) {
+            clearInterval(countdown);
+            countdown = null;
+
+            console.log("Round ended!");
+
+            broadcast(
+                wss,
+                "server:roundEnded",
+                { message: "The round has ended!" }
+            );
+        }
+    }, 1000);
+}
+
+function stopCountdown() {
+    if (countdown) {
+        clearInterval(countdown);
+        countdown = null;
+    }
+}
 
 export function playerConnection(ws) {
     ws.clientId = randomUUID();
@@ -15,6 +65,9 @@ export function playerDisconnection(ws, clientId) {
         const player = connectedPlayers.get(clientId);
         connectedPlayers.delete(clientId);
         console.log(`Player ${player.username} (${clientId}) disconnected.`);
+
+        if (connectedPlayers.size === 0)
+            stopCountdown();
     } else {
         console.warn(`Disconnection: clientId ${clientId} not found in connectedPlayers.`);
     }
@@ -42,6 +95,10 @@ export function createPlayer(ws, eventName, requestId, data) {
 
     console.log(`Player created for client ${ws.clientId} with username: ${data.username}`);
     sendSimpleMessage(ws, eventName, requestId, true, newPlayer.username);
+    
+    // If it's the first player, start the timer
+    if (connectedPlayers.size < 2)
+        startCountdown();
 }
 
 export function scoreUpdate(ws, eventName, requestId, data) {

@@ -27,11 +27,3 @@ export function broadcast(wss, eventName, data = {}) {
         }
     });
 }
-
-export function sendToPlayer(wss, clientId, eventName, data) {
-    for (const client of wss.clients) {
-        if (client.readyState === client.OPEN && client.clientId === clientId) {
-            send(client, eventName, "0", data);
-        }
-    }
-}

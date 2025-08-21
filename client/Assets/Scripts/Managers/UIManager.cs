@@ -10,7 +10,7 @@ namespace NetworkedInvaders.Manager
 	{
 		[SerializeField] private Text scoreText;
 		[SerializeField] private Text highscoreText;
-		[SerializeField] private Text lives;
+		[SerializeField] private Text timerText;
 		[SerializeField] private InputField playerNameInput;
 		[SerializeField] private Text playerInputResponseText;
 		[SerializeField] private GameObject gameOverPanel;
@@ -29,6 +29,7 @@ namespace NetworkedInvaders.Manager
 			GameManager.OnStartGameplay += OnStartGameplay;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
 			NetworkRegistry.OnScoresReceived += OnScoresReceived;
+			NetworkRegistry.OnTimerReceived += OnTimerReceived;
 		}
 
 		private void OnDestroy()
@@ -38,6 +39,7 @@ namespace NetworkedInvaders.Manager
 			GameManager.OnStartGameplay -= OnStartGameplay;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
 			NetworkRegistry.OnScoresReceived -= OnScoresReceived;
+			NetworkRegistry.OnTimerReceived -= OnTimerReceived;
 			
 			GameManager.OnScoreChanged -= OnScoreChanged;
 		}
@@ -47,6 +49,11 @@ namespace NetworkedInvaders.Manager
 			if (!highscoreText.isActiveAndEnabled)
 				highscoreText.gameObject.SetActive(true);
 			highscoreText.text = "Highscore: " + highscore;
+		}
+
+		private void OnTimerReceived(int newTimer)
+		{
+			timerText.text = newTimer.ToString();
 		}
 
 		private void OnActivateScoring()
@@ -79,6 +86,7 @@ namespace NetworkedInvaders.Manager
 		private void OnStartGameplay()
 		{
 			playerNameInput.transform.parent.gameObject.SetActive(false);
+			timerText.gameObject.SetActive(true);
 			if (isScoreActive)
 				scoreText.gameObject.SetActive(true);
 		}

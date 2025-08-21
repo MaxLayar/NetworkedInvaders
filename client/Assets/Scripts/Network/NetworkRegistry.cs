@@ -10,6 +10,8 @@ namespace NetworkedInvaders.Network
         public static event Action<string, string> OnServerConnected;
         public static event Action<bool, string> OnLoginResult;
         public static event Action<string, int, int> OnScoresReceived;
+        public static event Action<int> OnTimerReceived;
+        public static event Action OnRoundEndedReceived;
 
         public static void InitHandlers()
         {
@@ -25,7 +27,7 @@ namespace NetworkedInvaders.Network
                     OnServerConnected?.Invoke(id, welcome);
                 }
             });
-            
+
             NetworkEvents.RegisterHandler("client:login", msg =>
             {
                 bool success = false;
@@ -35,12 +37,12 @@ namespace NetworkedInvaders.Network
                     success = obj["success"]?.ToObject<bool>() ?? false;
                     message = obj["message"]?.ToString();
 
-                    Debug.Log($"Login response { (success?"success":"failure")}: {message}");
+                    Debug.Log($"Login response {(success ? "success" : "failure")}: {message}");
                 }
-                
+
                 OnLoginResult?.Invoke(success, message);
             });
-            
+
             NetworkEvents.RegisterHandler("client:scoreUpdate", msg =>
             {
                 if (msg.data is JObject obj)
@@ -58,8 +60,23 @@ namespace NetworkedInvaders.Network
                     OnScoresReceived?.Invoke(username, score, highscore);
                 }
             });
+
+            NetworkEvents.RegisterHandler("server:countdown", msg =>
+            {
+                if (msg.data is JObject obj)
+                {
+                    int remainingTime = obj["remainingTime"]?.ToObject<int>() ?? 0;
+
+                    OnTimerReceived?.Invoke(remainingTime);
+                }
+            });
+
+            NetworkEvents.RegisterHandler("server:roundEnded", msg =>
+            {
+                OnRoundEndedReceived?.Invoke();
+            });
         }
-        
+
         #region Emitters
 
         public static void InitEmitters()

@@ -56,6 +56,7 @@ namespace NetworkedInvaders.Manager
 			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
 			NetworkRegistry.OnLoginResult += OnLoginResult;
 			NetworkRegistry.OnServerConnected += OnServerConnected;
+			NetworkRegistry.OnRoundEndedReceived += GameOver;
 			UIManager.OnGameOverSkip += EndRound;
 
 			if (isScoreActive)
@@ -71,6 +72,7 @@ namespace NetworkedInvaders.Manager
 			Invader.OnTriggerEnter2DEvent -= HandleInvaderCollision;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
 			NetworkRegistry.OnServerConnected -= OnServerConnected;
+			NetworkRegistry.OnRoundEndedReceived -= GameOver;
 			UIManager.OnGameOverSkip -= EndRound;
 		}
 
