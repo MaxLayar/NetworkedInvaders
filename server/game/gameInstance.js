@@ -60,16 +60,16 @@ export function playerConnection(ws) {
     sendWelcome(ws);
 }
 
-export function playerDisconnection(ws, clientId) {
-    if (connectedPlayers.has(clientId)) {
-        const player = connectedPlayers.get(clientId);
-        connectedPlayers.delete(clientId);
-        console.log(`Player ${player.username} (${clientId}) disconnected.`);
+export function playerDisconnection(ws) {
+    if (connectedPlayers.has(ws.clientId)) {
+        const player = connectedPlayers.get(ws.clientId);
+        connectedPlayers.delete(ws.clientId);
+        console.log(`Player ${player.username} (${ws.clientId}) disconnected.`);
 
         if (connectedPlayers.size === 0)
             stopCountdown();
     } else {
-        console.warn(`Disconnection: clientId ${clientId} not found in connectedPlayers.`);
+        console.warn(`Disconnection: clientId ${ws.clientId} not found in connectedPlayers.`);
     }
 }
 
