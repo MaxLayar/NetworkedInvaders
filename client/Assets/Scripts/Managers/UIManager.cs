@@ -17,6 +17,13 @@ namespace NetworkedInvaders.Manager
 		private void Start()
 		{
 			GameManager.OnGameOver += OnGameOver;
+			NetworkManager.OnLoggedIn += OnLoggedIn;
+		}
+
+		private void OnDestroy()
+		{
+			GameManager.OnGameOver -= OnGameOver;
+			NetworkManager.OnLoggedIn -= OnLoggedIn;
 		}
 
 		public void OnSubmitPlayerName(string playerName)
@@ -25,12 +32,18 @@ namespace NetworkedInvaders.Manager
 			
 			isSubmitting = true;
 
-			NetworkManager.Instance.SubmitPlayerName(playerName, (response) =>
-			{
-				playerInputResponseText.text = "TODO: " + response;
-				isSubmitting = false;
-			});
+			NetworkManager.Instance.Login(playerName);
 		}
+
+		private void OnLoggedIn(NetworkManager.ServerMessage response)
+		{
+			isSubmitting = false;
+			if (response.IsSuccess())
+				playerNameInput.transform.parent.gameObject.SetActive(false);
+			else
+				playerInputResponseText.text = response.data;
+		}
+
 		private void OnGameOver()
 		{
 			Time.timeScale = 0f;

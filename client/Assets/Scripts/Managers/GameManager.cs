@@ -33,27 +33,36 @@ namespace NetworkedInvaders.Manager
 		private void Start()
 		{
 			invaders = new List<Invader>();
-			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
 			
 			loggedIn = false;
 			Time.timeScale = 0f;
-			
-			NetworkManager.Instance.Login(response =>
-			{
-				loggedIn = true;
-				SpawnInvaders();
-				gameplayElements.SetActive(true);
-			
-				Time.timeScale = 1f;
-			});
+
+			Invader.OnTriggerEnter2DEvent += HandleInvaderCollision;
+			NetworkManager.OnLoggedIn += OnLoggedIn;
 		}
 
 		private void OnDestroy()
 		{
 			Invader.OnTriggerEnter2DEvent -= HandleInvaderCollision;
+			NetworkManager.OnLoggedIn -= OnLoggedIn;
 		}
 
 		#region GameState
+
+		private void OnLoggedIn(NetworkManager.ServerMessage response)
+		{
+			Debug.Log("Player logged");
+			loggedIn = true;
+			StartGameplay();
+		}
+
+		private void StartGameplay()
+		{
+			Time.timeScale = 1f;
+			gameplayElements.SetActive(true);
+			SpawnInvaders();
+		}
+		
 		private void EndRound()
 		{
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
