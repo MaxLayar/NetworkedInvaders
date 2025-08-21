@@ -41,7 +41,7 @@ namespace NetworkedInvaders.Manager
 			if (response.IsSuccess())
 				playerNameInput.transform.parent.gameObject.SetActive(false);
 			else
-				playerInputResponseText.text = response.data;
+				playerInputResponseText.text = response.data.ToString();
 		}
 
 		private void OnGameOver()

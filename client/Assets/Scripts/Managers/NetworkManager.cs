@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using NativeWebSocket;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NetworkedInvaders.Manager
 {
@@ -10,6 +12,8 @@ namespace NetworkedInvaders.Manager
 	{
 		[SerializeField] private string serverUrl = "ws://localhost:4444";
 		private WebSocket websocket;
+
+		private string clientID = "";
 
 		public static event Action OnWebsocketOpen;
 		public static event Action OnWebsocketClosed;
@@ -36,7 +40,7 @@ namespace NetworkedInvaders.Manager
 		{
 			public string eventName;
 			public string requestId;
-			public string data;
+			public object data;
 
 			public bool IsSuccess() => eventName != "error";
 		}
@@ -114,7 +118,7 @@ namespace NetworkedInvaders.Manager
 				data = data
 			};
 			
-			string jsonString = JsonUtility.ToJson(msg);
+			string jsonString = JsonConvert.SerializeObject(msg);
 			websocket.SendText(jsonString);
 		}
 
@@ -123,7 +127,7 @@ namespace NetworkedInvaders.Manager
 			ServerMessage serverMsg;
 			try
 			{
-				serverMsg = JsonUtility.FromJson<ServerMessage>(message);
+				serverMsg = JsonConvert.DeserializeObject<ServerMessage>(message);
 			}
 			catch (Exception e)
 			{
@@ -131,6 +135,29 @@ namespace NetworkedInvaders.Manager
 				return;
 			}
 
+			if (serverMsg.eventName == "server:connection")
+			{
+				var typed = JsonConvert.DeserializeObject<ServerMessage>(message);
+				if (typed.data is JObject obj)
+				{
+					string msg = obj["message"]?.ToString();
+					string clientId = obj["clientID"]?.ToString();
+					Debug.Log($"Welcome {clientId} → {msg}");
+
+					clientID = clientId;
+				}
+			}
+			else if (serverMsg.eventName == "client:login")
+			{
+				var typed = JsonConvert.DeserializeObject<ServerMessage>(message);
+				if (typed.data is JObject obj)
+				{
+					string msg = obj["message"]?.ToString();
+					Debug.Log($"Hello → {msg}");
+				}
+				Debug.Log("User: " + typed.data);
+			}
+			
 			if (!string.IsNullOrEmpty(serverMsg.requestId) && pendingRequests.TryGetValue(serverMsg.requestId, out var callback))
 			{
 				callback?.Invoke(serverMsg);
