@@ -4,9 +4,6 @@ namespace NetworkedInvaders.Manager
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
-        // Can be overriden if some singletons doesn't need to be scene persistant.
-        public virtual bool isDontDestroyOnLoad => true;
-
         protected static T instance;
         public static T Instance
         {
@@ -39,9 +36,6 @@ namespace NetworkedInvaders.Manager
             }
 
             instance = this as T;
-
-            if (isDontDestroyOnLoad)
-                DontDestroyOnLoad(gameObject);
 
             OnAwake();
         }

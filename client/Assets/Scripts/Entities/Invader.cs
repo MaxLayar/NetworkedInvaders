@@ -42,10 +42,5 @@ namespace NetworkedInvaders.Entity
         {
             OnTriggerEnter2DEvent?.Invoke(this, col);
         }
-
-        private void OnDestroy()
-        {
-            GameManager.Instance.RemoveInvader(this);
-        }
     }
 }

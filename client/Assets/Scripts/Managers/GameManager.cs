@@ -131,13 +131,7 @@ namespace NetworkedInvaders.Manager
 			}
 		}
 
-		private void KillInvader(Invader invader)
-		{
-			if (isScoreActive)
-				Score += invader?.level ?? 0;
-			
-			Destroy(invader?.gameObject);
-		}
+
 
 		private void InvaderHitEdge(EdgeSide side)
 		{
@@ -151,7 +145,16 @@ namespace NetworkedInvaders.Manager
 			isMoveRight = !isMoveRight;
 			invaders.ForEach(invader => invader?.ChangeDirection(isMoveRight));
 		}
-
+		
+		private void KillInvader(Invader invader)
+		{
+			if (isScoreActive)
+				Score += invader?.level ?? 0;
+			
+			RemoveInvader(invader);
+			Destroy(invader?.gameObject);
+		}
+		
 		internal void RemoveInvader(Invader invader)
 		{
 			invaders.Remove(invader);
