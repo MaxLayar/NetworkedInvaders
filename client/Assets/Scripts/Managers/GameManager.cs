@@ -87,6 +87,7 @@ namespace NetworkedInvaders.Manager
 		
 		private void EndRound()
 		{
+			score = 0; //do not trigger OnScoreChanged
 			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 		
