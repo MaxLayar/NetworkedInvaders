@@ -34,6 +34,8 @@ namespace NetworkedInvaders.Manager
 			GameManager.OnGameOver -= OnGameOver;
 			NetworkRegistry.OnLoginResult -= OnLoginResult;
 			NetworkRegistry.OnScoresReceived -= OnScoresReceived;
+			
+			GameManager.OnScoreChanged -= OnScoreChanged;
 		}
 
 		private void OnScoresReceived(string playerName, int currentScore, int highscore)
